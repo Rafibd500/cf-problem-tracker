@@ -17,7 +17,152 @@
         <p class="subtitle">Track your problem solving progress</p>
     </header>
 
+    <!-- Statistics -->
+    <div class="dashboard">
+
+        <div class="stat-card">
+            <div class="stat-value" id="totalProblems">0</div>
+            <div class="stat-label">Total Problems</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value" id="solvedProblems">0</div>
+            <div class="stat-label">Solved Problems</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value" id="selectedRatingSolved">-</div>
+            <div class="stat-label" id="selectedRatingLabel">
+                Selected Rating Solved
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value" id="attemptedProblems">0</div>
+            <div class="stat-label">Attempted Problems</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value" id="totalTime">00:00</div>
+            <div class="stat-label">Total Time</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value" id="averageTime">00:00</div>
+            <div class="stat-label">Average Solved Time</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-value" id="averageRating">0</div>
+            <div class="stat-label">Average Rating</div>
+        </div>
+
+    </div>
+
+
+    <!-- Add problem and filters -->
+    <div class="controls">
+
+        <div class="control-row">
+
+            <input
+                id="problemId"
+                type="text"
+                placeholder="Enter Problem ID, e.g. 4A"
+            >
+
+            <button onclick="fetchProblem()">
+                Fetch Problem
+            </button>
+
+            <button class="danger" onclick="clearAllProblems()">
+                Clear All
+            </button>
+
+        </div>
+
+
+        <div class="control-row">
+
+            <select id="statusFilter" onchange="applyFilters()">
+                <option value="all">All Status</option>
+                <option value="solved">Solved</option>
+                <option value="attempted">Attempted</option>
+                <option value="unsolved">Unsolved</option>
+            </select>
+
+
+            <select id="ratingFilter" onchange="applyFilters()">
+                <option value="all">All Ratings</option>
+                <option value="800">800</option>
+                <option value="900">900</option>
+                <option value="1000">1000</option>
+                <option value="1100">1100</option>
+                <option value="1200">1200</option>
+                <option value="1300">1300</option>
+                <option value="1400">1400</option>
+                <option value="1500">1500</option>
+                <option value="1600">1600+</option>
+            </select>
+
+
+            <select id="solvedFilter" onchange="applyFilters()">
+                <option value="all">All</option>
+                <option value="yes">Solved By Me</option>
+                <option value="no">Not Solved By Me</option>
+            </select>
+
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search problem..."
+                oninput="applyFilters()"
+            >
+
+
+            <button onclick="resetFilters()">
+                Reset Filters
+            </button>
+
+        </div>
+
+
+        <div id="message"></div>
+
+    </div>
+
+
+    <!-- Problem list -->
+    <div class="problem-list">
+
+        <div class="problem-header">
+
+            <div>ID</div>
+            <div>Problem Name</div>
+            <div>Topic</div>
+            <div>Rating</div>
+            <div>Date</div>
+            <div>Status</div>
+            <div>Time Spent</div>
+            <div>Solved By Me</div>
+            <div>Action</div>
+
+        </div>
+
+
+        <div id="problemContainer">
+
+            <p id="emptyMessage" style="padding:20px;text-align:center;">
+                No problems added yet.
+            </p>
+
+        </div>
+
+    </div>
+
 </div>
+
 
 <script src="script.js"></script>
 
