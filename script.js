@@ -193,7 +193,6 @@ function displayProblems(list) {
 
         row.className = "problem-row";
 
-        // Topics are hidden until the problem is solved
         let topicText = "Solve to reveal topics";
 
         if (problem.status === "solved") {
@@ -246,7 +245,8 @@ function displayProblems(list) {
 
             <div>
 
-                <select class="status">
+                <select class="status"
+                        onchange="changeStatus('${problem.id}', this.value)">
 
                     <option value="unsolved"
                         ${problem.status === "unsolved"
@@ -284,7 +284,7 @@ function displayProblems(list) {
 
             <div>
 
-                <div class="time">
+                <div class="time" id="time-${problem.id}">
 
                     ${formatTime(problem.timeSpent)}
 
@@ -293,18 +293,27 @@ function displayProblems(list) {
 
                 <div class="timer-buttons">
 
-                    <button class="start">
+                    <button class="start"
+                            onclick="startTimer('${problem.id}')">
+
                         Start
+
                     </button>
 
 
-                    <button class="stop">
+                    <button class="stop"
+                            onclick="stopTimer('${problem.id}')">
+
                         Stop
+
                     </button>
 
 
-                    <button class="reset">
+                    <button class="reset"
+                            onclick="resetTimer('${problem.id}')">
+
                         Reset
+
                     </button>
 
                 </div>
@@ -315,17 +324,20 @@ function displayProblems(list) {
             <div class="solved-check">
 
                 <input type="checkbox"
-                       ${problem.solvedByMe
-                           ? "checked"
-                           : ""}>
+                       ${problem.solvedByMe ? "checked" : ""}
+                       ${problem.status !== "solved" ? "disabled" : ""}
+                       onchange="changeSolvedByMe('${problem.id}', this.checked)">
 
             </div>
 
 
             <div>
 
-                <button class="delete">
+                <button class="delete"
+                        onclick="deleteProblem('${problem.id}')">
+
                     Delete
+
                 </button>
 
             </div>
@@ -334,4 +346,107 @@ function displayProblems(list) {
 
         container.appendChild(row);
     });
+}
+
+
+/*
+        =========================================
+        7. SOLVED BY ME
+        =========================================
+    */
+
+function changeSolvedByMe(problemId, value) {
+
+    let problem = problems.find(function(problem) {
+        return problem.id === problemId;
+    });
+
+    if (problem) {
+        problem.solvedByMe = value;
+    }
+
+    applyFilters();
+}
+
+
+
+/*
+        =========================================
+        8. TIMER
+        =========================================
+    */
+
+function startTimer(problemId) {
+
+    let problem = problems.find(function(problem) {
+        return problem.id === problemId;
+    });
+
+    if (!problem || problem.isRunning) {
+        return;
+    }
+
+    problem.isRunning = true;
+
+    problem.timer = setInterval(function() {
+
+        problem.timeSpent++;
+
+        let timeElement =
+            document.getElementById("time-" + problemId);
+
+        if (timeElement) {
+            timeElement.textContent =
+                formatTime(problem.timeSpent);
+        }
+
+        // Update only the dashboard.
+        // Do not re-render the filtered problem list every second.
+        updateStatistics(getVisibleProblems());
+
+    }, 1000);
+}
+
+
+function stopTimer(problemId) {
+
+    let problem = problems.find(function(problem) {
+        return problem.id === problemId;
+    });
+
+    if (!problem) {
+        return;
+    }
+
+    clearInterval(problem.timer);
+
+    problem.timer = null;
+    problem.isRunning = false;
+
+    updateStatistics(getVisibleProblems());
+}
+
+
+function resetTimer(problemId) {
+
+    let problem = problems.find(function(problem) {
+        return problem.id === problemId;
+    });
+
+    if (!problem) {
+        return;
+    }
+
+    stopTimer(problemId);
+
+    problem.timeSpent = 0;
+
+    let timeElement =
+        document.getElementById("time-" + problemId);
+
+    if (timeElement) {
+        timeElement.textContent = "00:00";
+    }
+
+    updateStatistics(getVisibleProblems());
 }
