@@ -450,3 +450,138 @@ function resetTimer(problemId) {
 
     updateStatistics(getVisibleProblems());
 }
+/*
+        =========================================
+        9. FILTER AND SEARCH
+        =========================================
+    */
+
+// Return the problems that are currently visible
+// according to the active filters.
+function getVisibleProblems() {
+
+    let status =
+        document.getElementById("statusFilter").value;
+
+    let rating =
+        document.getElementById("ratingFilter").value;
+
+    let solved =
+        document.getElementById("solvedFilter").value;
+
+    let search =
+        document.getElementById("searchInput").value.toLowerCase();
+
+
+    return problems.filter(function(problem) {
+
+        // Status filter
+        if (status !== "all" &&
+            problem.status !== status) {
+
+            return false;
+        }
+
+
+        // Rating filter
+        if (rating !== "all") {
+
+            // 1600 means 1600+
+            if (rating === "1600") {
+
+                if (problem.rating < 1600) {
+                    return false;
+                }
+
+            } else {
+
+                if (problem.rating != Number(rating)) {
+                    return false;
+                }
+            }
+        }
+
+
+        // Solved by me filter
+        if (solved === "yes" &&
+            !problem.solvedByMe) {
+
+            return false;
+        }
+
+
+        if (solved === "no" &&
+            problem.solvedByMe) {
+
+            return false;
+        }
+
+
+        // Search filter
+        if (search !== "") {
+
+            let id =
+                problem.id.toLowerCase();
+
+            let name =
+                problem.name.toLowerCase();
+
+
+            if (!id.includes(search) &&
+                !name.includes(search)) {
+
+                return false;
+            }
+        }
+
+
+        return true;
+    });
+}
+
+
+/*
+        =========================================
+        APPLY FILTERS
+        =========================================
+    */
+
+function applyFilters() {
+
+    let filtered =
+        getVisibleProblems();
+
+
+    // Display filtered problems
+    displayProblems(filtered);
+
+
+    // Dashboard shows statistics
+    // for the currently visible problems.
+    updateStatistics(filtered);
+}
+
+
+/*
+        =========================================
+        RESET FILTERS
+        =========================================
+    */
+
+function resetFilters() {
+
+    document.getElementById("statusFilter").value =
+        "all";
+
+    document.getElementById("ratingFilter").value =
+        "all";
+
+    document.getElementById("solvedFilter").value =
+        "all";
+
+    document.getElementById("searchInput").value =
+        "";
+
+
+    applyFilters();
+}
