@@ -2,19 +2,6 @@
         =========================================
         1. MAIN DATA
         =========================================
-
-        All problems are stored in this array.
-
-        Example:
-        problems = [
-            {
-                id: "4A",
-                name: "Watermelon",
-                rating: 800,
-                tags: ["math"],
-                status: "unsolved"
-            }
-        ]
     */
 
 let problems = [];
@@ -183,3 +170,168 @@ function addProblem(problem) {
         5. DISPLAY PROBLEMS
         =========================================
     */
+
+function displayProblems(list) {
+
+    let container = document.getElementById("problemContainer");
+
+    container.innerHTML = "";
+
+    if (list.length === 0) {
+
+        container.innerHTML =
+            '<p style="padding:20px;text-align:center;">' +
+            'No problems found.' +
+            '</p>';
+
+        return;
+    }
+
+    list.forEach(function(problem) {
+
+        let row = document.createElement("div");
+
+        row.className = "problem-row";
+
+        // Topics are hidden until the problem is solved
+        let topicText = "Solve to reveal topics";
+
+        if (problem.status === "solved") {
+            topicText = problem.tags.join(", ");
+        }
+
+        row.innerHTML = `
+
+            <div class="problem-id">
+
+                <a href="https://codeforces.com/problemset/problem/${problem.contestId}/${problem.index}"
+                   target="_blank">
+
+                    ${problem.id}
+
+                </a>
+
+            </div>
+
+
+            <div>
+                ${problem.name}
+            </div>
+
+
+            <div class="topic ${
+                problem.status !== "solved"
+                    ? "hidden-topic"
+                    : ""
+            }">
+
+                ${topicText}
+
+            </div>
+
+
+            <div class="rating">
+
+                ${problem.rating}
+
+            </div>
+
+
+            <div>
+
+                ${problem.date}
+
+            </div>
+
+
+            <div>
+
+                <select class="status">
+
+                    <option value="unsolved"
+                        ${problem.status === "unsolved"
+                            ? "selected"
+                            : ""}>
+
+                        Unsolved
+
+                    </option>
+
+
+                    <option value="attempted"
+                        ${problem.status === "attempted"
+                            ? "selected"
+                            : ""}>
+
+                        Attempted
+
+                    </option>
+
+
+                    <option value="solved"
+                        ${problem.status === "solved"
+                            ? "selected"
+                            : ""}>
+
+                        Solved
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <div class="time">
+
+                    ${formatTime(problem.timeSpent)}
+
+                </div>
+
+
+                <div class="timer-buttons">
+
+                    <button class="start">
+                        Start
+                    </button>
+
+
+                    <button class="stop">
+                        Stop
+                    </button>
+
+
+                    <button class="reset">
+                        Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="solved-check">
+
+                <input type="checkbox"
+                       ${problem.solvedByMe
+                           ? "checked"
+                           : ""}>
+
+            </div>
+
+
+            <div>
+
+                <button class="delete">
+                    Delete
+                </button>
+
+            </div>
+
+        `;
+
+        container.appendChild(row);
+    });
+}
