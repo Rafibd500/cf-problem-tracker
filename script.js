@@ -783,3 +783,22 @@ function updateStatistics(list = null) {
             selectedRating + " Solved";
     }
 }
+/*
+        =========================================
+        13. ENTER KEY
+        =========================================
+    */
+
+document.getElementById("problemId").addEventListener(
+    "keypress",
+    function(event) {
+
+        if (event.key === "Enter") {
+            fetchProblem();
+        }
+    }
+);
+
+
+// Show empty list when page starts
+applyFilters();
