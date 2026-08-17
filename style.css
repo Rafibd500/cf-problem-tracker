@@ -34,3 +34,240 @@ h1 {
     color: #777;
     margin: 0;
 }
+
+
+/* Statistics */
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #3498db;
+}
+
+.stat-label {
+    color: #777;
+}
+
+
+/* Input and filters */
+
+.controls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.control-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+input,
+select,
+button {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+input {
+    flex: 1;
+    min-width: 200px;
+}
+
+button {
+    border: none;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #2980b9;
+}
+
+.danger {
+    background: #e74c3c;
+}
+
+.danger:hover {
+    background: #c0392b;
+}
+
+#message {
+    display: none;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+
+/* Problem table */
+
+.problem-list {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.problem-header,
+.problem-row {
+    display: grid;
+    grid-template-columns:
+        80px
+        2fr
+        2fr
+        90px
+        110px
+        110px
+        180px
+        100px
+        80px;
+
+    gap: 10px;
+    align-items: center;
+    padding: 12px 15px;
+}
+
+.problem-header {
+    background: #2c3e50;
+    color: white;
+    font-weight: bold;
+}
+
+.problem-row {
+    border-bottom: 1px solid #eee;
+}
+
+.problem-row:hover {
+    background: #fafafa;
+}
+
+.problem-id {
+    font-weight: bold;
+}
+
+.problem-id a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.topic {
+    color: #777;
+    font-size: 14px;
+}
+
+.hidden-topic {
+    color: #bbb;
+    font-style: italic;
+}
+
+.rating {
+    padding: 5px;
+    text-align: center;
+    border-radius: 4px;
+    background: #eee;
+}
+
+.status {
+    padding: 6px;
+    border-radius: 15px;
+}
+
+.time {
+    text-align: center;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.timer-buttons {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.timer-buttons button {
+    padding: 5px 8px;
+    font-size: 12px;
+}
+
+.start {
+    background: #27ae60;
+}
+
+.stop {
+    background: #e74c3c;
+}
+
+.reset {
+    background: #f39c12;
+}
+
+.delete {
+    background: #6c757d;
+    padding: 7px 10px;
+}
+
+.solved-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.solved-check input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+
+
+/* Mobile */
+
+@media (max-width: 1100px) {
+
+    .dashboard {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .problem-header {
+        display: none;
+    }
+
+    .problem-row {
+        display: block;
+        padding: 15px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .problem-row > div {
+        margin-bottom: 8px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+}
