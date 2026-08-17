@@ -2,803 +2,697 @@
         =========================================
         1. MAIN DATA
         =========================================
+
+        All problems are stored in this array.
+
+        Example:
+        problems = [
+            {
+                id: "4A",
+                name: "Watermelon",
+                rating: 800,
+                tags: ["math"],
+                status: "unsolved"
+            }
+        ]
     */
 
-let problems = [];
+    let problems = [];
 
 
-/*
+    /*
         =========================================
         2. HELPER FUNCTION
         =========================================
     */
 
-// Convert seconds into MM:SS format
-function formatTime(seconds) {
+    // Convert seconds into MM:SS format
+    function formatTime(seconds) {
 
-    let minutes = Math.floor(seconds / 60);
-    let remainingSeconds = seconds % 60;
+        let minutes = Math.floor(seconds / 60);
+        let remainingSeconds = seconds % 60;
 
-    return String(minutes).padStart(2, "0") +
-           ":" +
-           String(remainingSeconds).padStart(2, "0");
-}
-
-
-// Show a message to the user
-function showMessage(text, type) {
-
-    let message = document.getElementById("message");
-
-    message.textContent = text;
-    message.style.display = "block";
-
-    if (type === "success") {
-        message.style.background = "#d4edda";
-        message.style.color = "#155724";
-    } else {
-        message.style.background = "#f8d7da";
-        message.style.color = "#721c24";
+        return String(minutes).padStart(2, "0") +
+               ":" +
+               String(remainingSeconds).padStart(2, "0");
     }
 
-    setTimeout(function () {
-        message.style.display = "none";
-    }, 3000);
-}
+
+    // Show a message to the user
+    function showMessage(text, type) {
+
+        let message = document.getElementById("message");
+
+        message.textContent = text;
+        message.style.display = "block";
+
+        if (type === "success") {
+            message.style.background = "#d4edda";
+            message.style.color = "#155724";
+        } else {
+            message.style.background = "#f8d7da";
+            message.style.color = "#721c24";
+        }
+
+        setTimeout(function () {
+            message.style.display = "none";
+        }, 3000);
+    }
 
 
-/*
+    /*
         =========================================
         3. FETCH PROBLEM FROM CODEFORCES
         =========================================
     */
 
-async function fetchProblem() {
+    async function fetchProblem() {
 
-    let input = document.getElementById("problemId");
-    let problemId = input.value.trim();
+        let input = document.getElementById("problemId");
+        let problemId = input.value.trim();
 
-    if (problemId === "") {
-        showMessage("Please enter a problem ID.", "error");
-        return;
-    }
-
-    // Example: 4A
-    // contestId = 4
-    // index = A
-    let contestId = problemId.replace(/[^0-9]/g, "");
-    let index = problemId.replace(/[0-9]/g, "");
-
-    if (contestId === "" || index === "") {
-        showMessage("Use a format like 4A or 118A.", "error");
-        return;
-    }
-
-    // Check duplicate problem
-    let alreadyExists = problems.some(function(problem) {
-        return problem.id === problemId;
-    });
-
-    if (alreadyExists) {
-        showMessage("This problem is already added.", "error");
-        return;
-    }
-
-    try {
-
-        // Call Codeforces API
-        let response = await fetch(
-            "https://codeforces.com/api/problemset.problems"
-        );
-
-        if (!response.ok) {
-            throw new Error("Could not connect to Codeforces.");
-        }
-
-        let data = await response.json();
-
-        // Find the requested problem
-        let foundProblem = data.result.problems.find(function(problem) {
-
-            return problem.contestId == contestId &&
-                   problem.index === index;
-        });
-
-        if (!foundProblem) {
-            showMessage("Problem not found.", "error");
+        if (problemId === "") {
+            showMessage("Please enter a problem ID.", "error");
             return;
         }
 
-        // Add the problem
-        addProblem(foundProblem);
+        // Example: 4A
+        // contestId = 4
+        // index = A
+        let contestId = problemId.replace(/[^0-9]/g, "");
+        let index = problemId.replace(/[0-9]/g, "");
 
-        input.value = "";
+        if (contestId === "" || index === "") {
+            showMessage("Use a format like 4A or 118A.", "error");
+            return;
+        }
 
-        showMessage("Problem added successfully!", "success");
+        // Check duplicate problem
+        let alreadyExists = problems.some(function(problem) {
+            return problem.id === problemId;
+        });
 
-    } catch (error) {
+        if (alreadyExists) {
+            showMessage("This problem is already added.", "error");
+            return;
+        }
 
-        showMessage(error.message, "error");
+        try {
+
+            // Call Codeforces API
+            let response = await fetch(
+                "https://codeforces.com/api/problemset.problems"
+            );
+
+            if (!response.ok) {
+                throw new Error("Could not connect to Codeforces.");
+            }
+
+            let data = await response.json();
+
+            // Find the requested problem
+            let foundProblem = data.result.problems.find(function(problem) {
+
+                return problem.contestId == contestId &&
+                       problem.index === index;
+            });
+
+            if (!foundProblem) {
+                showMessage("Problem not found.", "error");
+                return;
+            }
+
+            // Add the problem
+            addProblem(foundProblem);
+
+            input.value = "";
+
+            showMessage("Problem added successfully!", "success");
+
+        } catch (error) {
+
+            showMessage(error.message, "error");
+        }
     }
-}
 
 
-/*
+    /*
         =========================================
         4. ADD PROBLEM
         =========================================
     */
 
-function addProblem(problem) {
+    function addProblem(problem) {
 
-    let newProblem = {
+        let newProblem = {
 
-        id: problem.contestId + problem.index,
+            id: problem.contestId + problem.index,
 
-        contestId: problem.contestId,
+            contestId: problem.contestId,
 
-        index: problem.index,
+            index: problem.index,
 
-        name: problem.name,
+            name: problem.name,
 
-        rating: problem.rating || "Unknown",
+            rating: problem.rating || "Unknown",
 
-        tags: problem.tags || [],
+            tags: problem.tags || [],
 
-        date: new Date().toLocaleDateString(),
+            date: new Date().toLocaleDateString(),
 
-        status: "unsolved",
+            status: "unsolved",
 
-        timeSpent: 0,
+            timeSpent: 0,
 
-        timer: null,
+            timer: null,
 
-        isRunning: false,
+            isRunning: false,
 
-        solvedByMe: false
-    };
+            solvedByMe: false
+        };
 
-    problems.push(newProblem);
+        problems.push(newProblem);
 
-    applyFilters();
-    updateStatistics();
-}
+        applyFilters();
+        updateStatistics();
+    }
 
 
-/*
+    /*
         =========================================
         5. DISPLAY PROBLEMS
         =========================================
     */
 
-function displayProblems(list) {
+    function displayProblems(list) {
 
-    let container = document.getElementById("problemContainer");
+        let container = document.getElementById("problemContainer");
 
-    container.innerHTML = "";
+        container.innerHTML = "";
 
-    if (list.length === 0) {
+        if (list.length === 0) {
 
-        container.innerHTML =
-            '<p style="padding:20px;text-align:center;">' +
-            'No problems found.' +
-            '</p>';
+            container.innerHTML =
+                '<p style="padding:20px;text-align:center;">' +
+                'No problems found.' +
+                '</p>';
 
-        return;
-    }
-
-    list.forEach(function(problem) {
-
-        let row = document.createElement("div");
-
-        row.className = "problem-row";
-
-        let topicText = "Solve to reveal topics";
-
-        if (problem.status === "solved") {
-            topicText = problem.tags.join(", ");
+            return;
         }
 
-        row.innerHTML = `
+        list.forEach(function(problem) {
 
-            <div class="problem-id">
+            let row = document.createElement("div");
 
-                <a href="https://codeforces.com/problemset/problem/${problem.contestId}/${problem.index}"
-                   target="_blank">
+            row.className = "problem-row";
 
-                    ${problem.id}
+            let topicText = "Solve to reveal topics";
 
-                </a>
+            if (problem.status === "solved") {
+                topicText = problem.tags.join(", ");
+            }
 
-            </div>
+            row.innerHTML = `
 
+                <div class="problem-id">
+                    <a href="https://codeforces.com/problemset/problem/${problem.contestId}/${problem.index}"
+                       target="_blank">
+                        ${problem.id}
+                    </a>
+                </div>
 
-            <div>
-                ${problem.name}
-            </div>
+                <div>${problem.name}</div>
 
+                <div class="topic ${
+                    problem.status !== "solved" ? "hidden-topic" : ""
+                }">
+                    ${topicText}
+                </div>
 
-            <div class="topic ${
-                problem.status !== "solved"
-                    ? "hidden-topic"
-                    : ""
-            }">
+                <div class="rating">
+                    ${problem.rating}
+                </div>
 
-                ${topicText}
+                <div>${problem.date}</div>
 
-            </div>
+                <div>
+                    <select class="status"
+                            onchange="changeStatus('${problem.id}', this.value)">
 
+                        <option value="unsolved"
+                            ${problem.status === "unsolved" ? "selected" : ""}>
+                            Unsolved
+                        </option>
 
-            <div class="rating">
+                        <option value="attempted"
+                            ${problem.status === "attempted" ? "selected" : ""}>
+                            Attempted
+                        </option>
 
-                ${problem.rating}
+                        <option value="solved"
+                            ${problem.status === "solved" ? "selected" : ""}>
+                            Solved
+                        </option>
 
-            </div>
+                    </select>
+                </div>
 
+                <div>
+                    <div class="time" id="time-${problem.id}">
+                        ${formatTime(problem.timeSpent)}
+                    </div>
 
-            <div>
+                    <div class="timer-buttons">
 
-                ${problem.date}
+                        <button class="start"
+                                onclick="startTimer('${problem.id}')">
+                            Start
+                        </button>
 
-            </div>
+                        <button class="stop"
+                                onclick="stopTimer('${problem.id}')">
+                            Stop
+                        </button>
 
+                        <button class="reset"
+                                onclick="resetTimer('${problem.id}')">
+                            Reset
+                        </button>
 
-            <div>
+                    </div>
+                </div>
 
-                <select class="status"
-                        onchange="changeStatus('${problem.id}', this.value)">
+                <div class="solved-check">
 
-                    <option value="unsolved"
-                        ${problem.status === "unsolved"
-                            ? "selected"
-                            : ""}>
-
-                        Unsolved
-
-                    </option>
-
-
-                    <option value="attempted"
-                        ${problem.status === "attempted"
-                            ? "selected"
-                            : ""}>
-
-                        Attempted
-
-                    </option>
-
-
-                    <option value="solved"
-                        ${problem.status === "solved"
-                            ? "selected"
-                            : ""}>
-
-                        Solved
-
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div>
-
-                <div class="time" id="time-${problem.id}">
-
-                    ${formatTime(problem.timeSpent)}
+                    <input type="checkbox"
+                           ${problem.solvedByMe ? "checked" : ""}
+                           ${problem.status !== "solved" ? "disabled" : ""}
+                           onchange="changeSolvedByMe('${problem.id}', this.checked)">
 
                 </div>
 
-
-                <div class="timer-buttons">
-
-                    <button class="start"
-                            onclick="startTimer('${problem.id}')">
-
-                        Start
-
+                <div>
+                    <button class="delete"
+                            onclick="deleteProblem('${problem.id}')">
+                        Delete
                     </button>
-
-
-                    <button class="stop"
-                            onclick="stopTimer('${problem.id}')">
-
-                        Stop
-
-                    </button>
-
-
-                    <button class="reset"
-                            onclick="resetTimer('${problem.id}')">
-
-                        Reset
-
-                    </button>
-
                 </div>
+            `;
 
-            </div>
-
-
-            <div class="solved-check">
-
-                <input type="checkbox"
-                       ${problem.solvedByMe ? "checked" : ""}
-                       ${problem.status !== "solved" ? "disabled" : ""}
-                       onchange="changeSolvedByMe('${problem.id}', this.checked)">
-
-            </div>
+            container.appendChild(row);
+        });
+    }
 
 
-            <div>
+    /*
+        =========================================
+        6. CHANGE STATUS
+        =========================================
+    */
 
-                <button class="delete"
-                        onclick="deleteProblem('${problem.id}')">
+    function changeStatus(problemId, newStatus) {
 
-                    Delete
+        let problem = problems.find(function(problem) {
+            return problem.id === problemId;
+        });
 
-                </button>
+        if (!problem) {
+            return;
+        }
 
-            </div>
+        problem.status = newStatus;
 
-        `;
+        // If problem is solved, stop timer
+        if (newStatus === "solved") {
+            stopTimer(problemId);
+        }
 
-        container.appendChild(row);
-    });
-}
+        // If not solved, remove solved-by-me status
+        if (newStatus !== "solved") {
+            problem.solvedByMe = false;
+        }
+
+        applyFilters();
+    }
 
 
-/*
+    /*
         =========================================
         7. SOLVED BY ME
         =========================================
     */
 
-function changeSolvedByMe(problemId, value) {
+    function changeSolvedByMe(problemId, value) {
 
-    let problem = problems.find(function(problem) {
-        return problem.id === problemId;
-    });
+        let problem = problems.find(function(problem) {
+            return problem.id === problemId;
+        });
 
-    if (problem) {
-        problem.solvedByMe = value;
+        if (problem) {
+            problem.solvedByMe = value;
+        }
+
+        applyFilters();
     }
 
-    applyFilters();
-}
 
-
-
-/*
+    /*
         =========================================
         8. TIMER
         =========================================
     */
 
-function startTimer(problemId) {
+    function startTimer(problemId) {
 
-    let problem = problems.find(function(problem) {
-        return problem.id === problemId;
-    });
+        let problem = problems.find(function(problem) {
+            return problem.id === problemId;
+        });
 
-    if (!problem || problem.isRunning) {
-        return;
+        if (!problem || problem.isRunning) {
+            return;
+        }
+
+        problem.isRunning = true;
+
+        problem.timer = setInterval(function() {
+
+            problem.timeSpent++;
+
+            let timeElement =
+                document.getElementById("time-" + problemId);
+
+            if (timeElement) {
+                timeElement.textContent =
+                    formatTime(problem.timeSpent);
+            }
+
+            // Update only the dashboard.
+            // Do not re-render the filtered problem list every second.
+            updateStatistics(getVisibleProblems());
+
+        }, 1000);
     }
 
-    problem.isRunning = true;
 
-    problem.timer = setInterval(function() {
+    function stopTimer(problemId) {
 
-        problem.timeSpent++;
+        let problem = problems.find(function(problem) {
+            return problem.id === problemId;
+        });
+
+        if (!problem) {
+            return;
+        }
+
+        clearInterval(problem.timer);
+
+        problem.timer = null;
+        problem.isRunning = false;
+
+        updateStatistics(getVisibleProblems());
+    }
+
+
+    function resetTimer(problemId) {
+
+        let problem = problems.find(function(problem) {
+            return problem.id === problemId;
+        });
+
+        if (!problem) {
+            return;
+        }
+
+        stopTimer(problemId);
+
+        problem.timeSpent = 0;
 
         let timeElement =
             document.getElementById("time-" + problemId);
 
         if (timeElement) {
-            timeElement.textContent =
-                formatTime(problem.timeSpent);
+            timeElement.textContent = "00:00";
         }
 
-        // Update only the dashboard.
-        // Do not re-render the filtered problem list every second.
         updateStatistics(getVisibleProblems());
-
-    }, 1000);
-}
-
-
-function stopTimer(problemId) {
-
-    let problem = problems.find(function(problem) {
-        return problem.id === problemId;
-    });
-
-    if (!problem) {
-        return;
     }
 
-    clearInterval(problem.timer);
 
-    problem.timer = null;
-    problem.isRunning = false;
-
-    updateStatistics(getVisibleProblems());
-}
-
-
-function resetTimer(problemId) {
-
-    let problem = problems.find(function(problem) {
-        return problem.id === problemId;
-    });
-
-    if (!problem) {
-        return;
-    }
-
-    stopTimer(problemId);
-
-    problem.timeSpent = 0;
-
-    let timeElement =
-        document.getElementById("time-" + problemId);
-
-    if (timeElement) {
-        timeElement.textContent = "00:00";
-    }
-
-    updateStatistics(getVisibleProblems());
-}
-/*
+    /*
         =========================================
         9. FILTER AND SEARCH
         =========================================
     */
 
-// Return the problems that are currently visible
-// according to the active filters.
-function getVisibleProblems() {
+    // Return the problems that are currently visible
+    // according to the active filters.
+    function getVisibleProblems() {
 
-    let status =
-        document.getElementById("statusFilter").value;
+        let status =
+            document.getElementById("statusFilter").value;
 
-    let rating =
-        document.getElementById("ratingFilter").value;
+        let rating =
+            document.getElementById("ratingFilter").value;
 
-    let solved =
-        document.getElementById("solvedFilter").value;
+        let solved =
+            document.getElementById("solvedFilter").value;
 
-    let search =
-        document.getElementById("searchInput").value.toLowerCase();
-
-
-    return problems.filter(function(problem) {
-
-        // Status filter
-        if (status !== "all" &&
-            problem.status !== status) {
-
-            return false;
-        }
+        let search =
+            document.getElementById("searchInput").value.toLowerCase();
 
 
-        // Rating filter
-        if (rating !== "all") {
+        return problems.filter(function(problem) {
 
-            // 1600 means 1600+
-            if (rating === "1600") {
-
-                if (problem.rating < 1600) {
-                    return false;
-                }
-
-            } else {
-
-                if (problem.rating != Number(rating)) {
-                    return false;
-                }
-            }
-        }
-
-
-        // Solved by me filter
-        if (solved === "yes" &&
-            !problem.solvedByMe) {
-
-            return false;
-        }
-
-
-        if (solved === "no" &&
-            problem.solvedByMe) {
-
-            return false;
-        }
-
-
-        // Search filter
-        if (search !== "") {
-
-            let id =
-                problem.id.toLowerCase();
-
-            let name =
-                problem.name.toLowerCase();
-
-
-            if (!id.includes(search) &&
-                !name.includes(search)) {
-
+            if (status !== "all" &&
+                problem.status !== status) {
                 return false;
             }
-        }
+
+            if (rating !== "all") {
+
+                if (rating === "1600") {
+
+                    if (problem.rating < 1600) {
+                        return false;
+                    }
+
+                } else {
+
+                    if (problem.rating != Number(rating)) {
+                        return false;
+                    }
+                }
+            }
+
+            if (solved === "yes" &&
+                !problem.solvedByMe) {
+                return false;
+            }
+
+            if (solved === "no" &&
+                problem.solvedByMe) {
+                return false;
+            }
+
+            if (search !== "") {
+
+                let id = problem.id.toLowerCase();
+                let name = problem.name.toLowerCase();
+
+                if (!id.includes(search) &&
+                    !name.includes(search)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }
 
 
-        return true;
-    });
-}
+    function applyFilters() {
+
+        let filtered = getVisibleProblems();
+
+        displayProblems(filtered);
+
+        // Dashboard shows statistics for the currently visible problems.
+        updateStatistics(filtered);
+    }
+
+    function resetFilters() {
+
+        document.getElementById("statusFilter").value = "all";
+
+        document.getElementById("ratingFilter").value = "all";
+
+        document.getElementById("solvedFilter").value = "all";
+
+        document.getElementById("searchInput").value = "";
+
+        applyFilters();
+    }
 
 
-/*
-        =========================================
-        APPLY FILTERS
-        =========================================
-    */
-
-function applyFilters() {
-
-    let filtered =
-        getVisibleProblems();
-
-
-    // Display filtered problems
-    displayProblems(filtered);
-
-
-    // Dashboard shows statistics
-    // for the currently visible problems.
-    updateStatistics(filtered);
-}
-
-
-/*
-        =========================================
-        RESET FILTERS
-        =========================================
-    */
-
-function resetFilters() {
-
-    document.getElementById("statusFilter").value =
-        "all";
-
-    document.getElementById("ratingFilter").value =
-        "all";
-
-    document.getElementById("solvedFilter").value =
-        "all";
-
-    document.getElementById("searchInput").value =
-        "";
-
-
-    applyFilters();
-}
-
-
-/*
+    /*
         =========================================
         10. DELETE
         =========================================
     */
 
-function deleteProblem(problemId) {
+    function deleteProblem(problemId) {
 
-    let problem = problems.find(function(problem) {
-        return problem.id === problemId;
-    });
+        let problem = problems.find(function(problem) {
+            return problem.id === problemId;
+        });
 
-    if (problem) {
-        stopTimer(problemId);
+        if (problem) {
+            stopTimer(problemId);
+        }
+
+        problems = problems.filter(function(problem) {
+            return problem.id !== problemId;
+        });
+
+        applyFilters();
+
+        showMessage("Problem deleted.", "success");
     }
 
-    problems = problems.filter(function(problem) {
-        return problem.id !== problemId;
-    });
 
-    applyFilters();
-
-    showMessage("Problem deleted.", "success");
-}
-
-
-/*
+    /*
         =========================================
         11. CLEAR ALL
         =========================================
     */
 
-function clearAllProblems() {
+    function clearAllProblems() {
 
-    if (!confirm("Are you sure you want to clear all problems?")) {
-        return;
+        if (!confirm("Are you sure you want to clear all problems?")) {
+            return;
+        }
+
+        problems.forEach(function(problem) {
+            stopTimer(problem.id);
+        });
+
+        problems = [];
+
+        applyFilters();
+
+        showMessage("All problems cleared.", "success");
     }
 
-    problems.forEach(function(problem) {
-        stopTimer(problem.id);
-    });
 
-    problems = [];
-
-    applyFilters();
-
-    showMessage("All problems cleared.", "success");
-}
-
-
-/*
+    /*
         =========================================
         12. STATISTICS
         =========================================
     */
 
-function updateStatistics(list = null) {
+    function updateStatistics(list = null) {
 
-    // Use the currently filtered problems for the dashboard.
-    let currentProblems = list !== null ? list : problems;
+        // Use the currently filtered problems for the dashboard.
+        let currentProblems = list !== null ? list : problems;
 
-    let total = currentProblems.length;
+        let total = currentProblems.length;
 
-    let solved = currentProblems.filter(function(problem) {
-        return problem.status === "solved";
-    }).length;
+        let solved = currentProblems.filter(function(problem) {
+            return problem.status === "solved";
+        }).length;
 
-    let attempted = currentProblems.filter(function(problem) {
-        return problem.status === "attempted";
-    }).length;
+        let attempted = currentProblems.filter(function(problem) {
+            return problem.status === "attempted";
+        }).length;
 
-    let solvedByMe = currentProblems.filter(function(problem) {
-        return problem.solvedByMe;
-    }).length;
+        let solvedByMe = currentProblems.filter(function(problem) {
+            return problem.solvedByMe;
+        }).length;
 
+        let totalTime = 0;
 
-    // Calculate total time spent on solved problems.
-    let totalTime = 0;
-
-    currentProblems.forEach(function(problem) {
-
-        if (problem.status === "solved") {
-            totalTime += problem.timeSpent;
-        }
-
-    });
-
-
-    // Calculate average solving time.
-    let averageTime =
-        solved > 0
-            ? Math.round(totalTime / solved)
-            : 0;
-
-
-    // Collect ratings of solved problems.
-    let ratings = [];
-
-    currentProblems.forEach(function(problem) {
-
-        if (
-            problem.status === "solved" &&
-            problem.rating !== "Unknown"
-        ) {
-
-            ratings.push(Number(problem.rating));
-
-        }
-
-    });
-
-
-    // Calculate average rating.
-    let averageRating = 0;
-
-    if (ratings.length > 0) {
-
-        let sum = 0;
-
-        ratings.forEach(function(rating) {
-            sum += rating;
+        currentProblems.forEach(function(problem) {
+            if (problem.status === "solved") {
+                totalTime += problem.timeSpent;
+            }
         });
 
-        averageRating =
-            Math.round(sum / ratings.length);
-    }
+        let averageTime =
+            solved > 0 ? Math.round(totalTime / solved) : 0;
 
+        let ratings = [];
 
-    // Update dashboard.
-    document.getElementById("totalProblems").textContent =
-        total;
+        currentProblems.forEach(function(problem) {
+            if (problem.status === "solved" &&
+                problem.rating !== "Unknown") {
+                ratings.push(Number(problem.rating));
+            }
+        });
 
-    document.getElementById("solvedProblems").textContent =
-        solved;
+        let averageRating = 0;
 
-    document.getElementById("attemptedProblems").textContent =
-        attempted;
+        if (ratings.length > 0) {
+            let sum = 0;
 
-    document.getElementById("totalTime").textContent =
-        formatTime(totalTime);
+            ratings.forEach(function(rating) {
+                sum += rating;
+            });
 
-    document.getElementById("averageTime").textContent =
-        formatTime(averageTime);
+            averageRating = Math.round(sum / ratings.length);
+        }
 
-    document.getElementById("averageRating").textContent =
-        averageRating;
+        document.getElementById("totalProblems").textContent = total;
+        document.getElementById("solvedProblems").textContent = solved;
+        document.getElementById("attemptedProblems").textContent = attempted;
+        document.getElementById("totalTime").textContent = formatTime(totalTime);
+        document.getElementById("averageTime").textContent = formatTime(averageTime);
+        document.getElementById("averageRating").textContent = averageRating;
 
+        // The last dashboard card shows solved-by-me count
+        // for the currently visible problems.
+        let selectedRating =
+            document.getElementById("ratingFilter").value;
 
-    /*
-        =========================================
-        SELECTED RATING STATISTICS
-        =========================================
-    */
+        let selectedRatingSolved = 0;
 
-    let selectedRating =
-        document.getElementById("ratingFilter").value;
-
-    let selectedRatingSolved = 0;
-
-
-    if (selectedRating !== "all") {
-
-        selectedRatingSolved =
-            currentProblems.filter(function(problem) {
-
+        if (selectedRating !== "all") {
+            selectedRatingSolved = currentProblems.filter(function(problem) {
                 return problem.status === "solved" &&
                        problem.rating == Number(selectedRating);
-
             }).length;
+        }
+
+        let selectedRatingSolvedElement =
+            document.getElementById("selectedRatingSolved");
+
+        let selectedRatingLabel =
+            document.getElementById("selectedRatingLabel");
+
+        if (selectedRating === "all") {
+            selectedRatingSolvedElement.textContent = solvedByMe;
+            selectedRatingLabel.textContent = "Solved By Me";
+        } else {
+            selectedRatingSolvedElement.textContent = selectedRatingSolved;
+            selectedRatingLabel.textContent = selectedRating + " Solved";
+        }
     }
 
-
-    let selectedRatingSolvedElement =
-        document.getElementById("selectedRatingSolved");
-
-    let selectedRatingLabel =
-        document.getElementById("selectedRatingLabel");
-
-
-    if (selectedRating === "all") {
-
-        selectedRatingSolvedElement.textContent =
-            solvedByMe;
-
-        selectedRatingLabel.textContent =
-            "Solved By Me";
-
-    } else {
-
-        selectedRatingSolvedElement.textContent =
-            selectedRatingSolved;
-
-        selectedRatingLabel.textContent =
-            selectedRating + " Solved";
-    }
-}
-/*
+    /*
         =========================================
         13. ENTER KEY
         =========================================
     */
 
-document.getElementById("problemId").addEventListener(
-    "keypress",
-    function(event) {
+    document.getElementById("problemId").addEventListener(
+        "keypress",
+        function(event) {
 
-        if (event.key === "Enter") {
-            fetchProblem();
+            if (event.key === "Enter") {
+                fetchProblem();
+            }
         }
-    }
-);
+    );
 
 
-// Show empty list when page starts
-applyFilters();
+    // Show empty list when page starts
+    applyFilters();
