@@ -635,3 +635,151 @@ function clearAllProblems() {
 
     showMessage("All problems cleared.", "success");
 }
+
+
+/*
+        =========================================
+        12. STATISTICS
+        =========================================
+    */
+
+function updateStatistics(list = null) {
+
+    // Use the currently filtered problems for the dashboard.
+    let currentProblems = list !== null ? list : problems;
+
+    let total = currentProblems.length;
+
+    let solved = currentProblems.filter(function(problem) {
+        return problem.status === "solved";
+    }).length;
+
+    let attempted = currentProblems.filter(function(problem) {
+        return problem.status === "attempted";
+    }).length;
+
+    let solvedByMe = currentProblems.filter(function(problem) {
+        return problem.solvedByMe;
+    }).length;
+
+
+    // Calculate total time spent on solved problems.
+    let totalTime = 0;
+
+    currentProblems.forEach(function(problem) {
+
+        if (problem.status === "solved") {
+            totalTime += problem.timeSpent;
+        }
+
+    });
+
+
+    // Calculate average solving time.
+    let averageTime =
+        solved > 0
+            ? Math.round(totalTime / solved)
+            : 0;
+
+
+    // Collect ratings of solved problems.
+    let ratings = [];
+
+    currentProblems.forEach(function(problem) {
+
+        if (
+            problem.status === "solved" &&
+            problem.rating !== "Unknown"
+        ) {
+
+            ratings.push(Number(problem.rating));
+
+        }
+
+    });
+
+
+    // Calculate average rating.
+    let averageRating = 0;
+
+    if (ratings.length > 0) {
+
+        let sum = 0;
+
+        ratings.forEach(function(rating) {
+            sum += rating;
+        });
+
+        averageRating =
+            Math.round(sum / ratings.length);
+    }
+
+
+    // Update dashboard.
+    document.getElementById("totalProblems").textContent =
+        total;
+
+    document.getElementById("solvedProblems").textContent =
+        solved;
+
+    document.getElementById("attemptedProblems").textContent =
+        attempted;
+
+    document.getElementById("totalTime").textContent =
+        formatTime(totalTime);
+
+    document.getElementById("averageTime").textContent =
+        formatTime(averageTime);
+
+    document.getElementById("averageRating").textContent =
+        averageRating;
+
+
+    /*
+        =========================================
+        SELECTED RATING STATISTICS
+        =========================================
+    */
+
+    let selectedRating =
+        document.getElementById("ratingFilter").value;
+
+    let selectedRatingSolved = 0;
+
+
+    if (selectedRating !== "all") {
+
+        selectedRatingSolved =
+            currentProblems.filter(function(problem) {
+
+                return problem.status === "solved" &&
+                       problem.rating == Number(selectedRating);
+
+            }).length;
+    }
+
+
+    let selectedRatingSolvedElement =
+        document.getElementById("selectedRatingSolved");
+
+    let selectedRatingLabel =
+        document.getElementById("selectedRatingLabel");
+
+
+    if (selectedRating === "all") {
+
+        selectedRatingSolvedElement.textContent =
+            solvedByMe;
+
+        selectedRatingLabel.textContent =
+            "Solved By Me";
+
+    } else {
+
+        selectedRatingSolvedElement.textContent =
+            selectedRatingSolved;
+
+        selectedRatingLabel.textContent =
+            selectedRating + " Solved";
+    }
+}
