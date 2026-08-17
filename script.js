@@ -585,3 +585,53 @@ function resetFilters() {
 
     applyFilters();
 }
+
+
+/*
+        =========================================
+        10. DELETE
+        =========================================
+    */
+
+function deleteProblem(problemId) {
+
+    let problem = problems.find(function(problem) {
+        return problem.id === problemId;
+    });
+
+    if (problem) {
+        stopTimer(problemId);
+    }
+
+    problems = problems.filter(function(problem) {
+        return problem.id !== problemId;
+    });
+
+    applyFilters();
+
+    showMessage("Problem deleted.", "success");
+}
+
+
+/*
+        =========================================
+        11. CLEAR ALL
+        =========================================
+    */
+
+function clearAllProblems() {
+
+    if (!confirm("Are you sure you want to clear all problems?")) {
+        return;
+    }
+
+    problems.forEach(function(problem) {
+        stopTimer(problem.id);
+    });
+
+    problems = [];
+
+    applyFilters();
+
+    showMessage("All problems cleared.", "success");
+}
